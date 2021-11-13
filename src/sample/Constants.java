@@ -15,4 +15,6 @@ public class Constants {
 
         public static final int ERROR = -1;
         public static final char WIN = 'w';
+
+        public static final int TIME_CONSTANT = 1000000000;
 }

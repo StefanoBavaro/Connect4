@@ -1,1 +1,4 @@
 rendere classe board singoletto
+
+chiedere al prof se va bene mettere il timer nel game controller, tanto dopo il minimax algorithm il resto delle azioni sono brevissimissimissime
+dire al prof che c'è questo problema con le mosse con AI, che quando premi il bottone printa la mossa umana dopo aver calcolato la mossa AI (anche se il print viene prima del calcolo). Le interessa o posso ignorare?

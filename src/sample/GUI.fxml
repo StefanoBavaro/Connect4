@@ -148,7 +148,7 @@
                   <Label text="Red Moves: 0" />
                   <Label layoutX="100.0" text="Yellow Moves: 0" />
                   <Label layoutX="223.0" text="Total Moves: 0" />
-                  <Label layoutX="335.0" text="Last Move Timer: " />
+                  <Label layoutX="335.0" text="Last AI Move Time: 0s" />
                </children>
             </Pane>
          </children>

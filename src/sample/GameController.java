@@ -1,6 +1,5 @@
 package sample;
 
-import com.sun.org.apache.bcel.internal.Const;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
-public class GameController {
+public class GameController{
     Game actualGame = Game.getActualGame();
 
     @FXML
@@ -77,18 +76,29 @@ public class GameController {
     public void addDisk(ActionEvent e){
         String text =((Button)e.getSource()).getText();
         int column = Integer.parseInt(text)-1;
-        char player = actualGame.actualPlayer; //need to save this because if a win happens, the status of the game is cancelled and i would not be able to print the right winner.
-        paint(column);
-        actualGame.makeMove(column);
-        if(actualGame.gamemode!=Constants.PVP){
-            int nextMove = actualGame.parseNextMove();
-            player = actualGame.actualPlayer;
-            paint(nextMove);
-            actualGame.makeMove(nextMove);
-        }
-        if(actualGame.inGame==false){
-            printWin(player);
-            repaint();
+        if(actualGame.board.checkLegalMove(column)) {
+            char player = actualGame.actualPlayer; //need to save this because if a win happens, the status of the game is cancelled and i would not be able to print the right winner.
+            paint(column);
+            boolean tie = actualGame.makeMove(column);
+            if (actualGame.gamemode != Constants.PVP) {
+                Timer t = new Timer();
+                t.start();
+                int nextMove = actualGame.parseNextMove();
+                player = actualGame.actualPlayer;
+                paint(nextMove);
+                actualGame.makeMove(nextMove);
+                t.stop();
+                String timeNeeded = t.elapsed();
+                changeTimerLabel(timeNeeded);
+            }
+            if (actualGame.inGame == false) {
+                if (tie) {
+                    printTie();
+                } else {
+                    printWin(player);
+                }
+                repaint();
+            }
         }
     }
 
@@ -112,9 +122,16 @@ public class GameController {
     private void printWin(char winner){
         Alert winAlert = new Alert(Alert.AlertType.INFORMATION);
         winAlert.setHeaderText("Winner");
-        if(winner==Constants.YELLOW) winAlert.setContentText("Yellow player won the match!  A new match will start with default settings.");
+        if(winner==Constants.YELLOW) winAlert.setContentText("Yellow player won the match! A new match will start with default settings.");
         else winAlert.setContentText("Red player won the match! A new match will start with default settings.");
         winAlert.showAndWait();
+    }
+
+    private void printTie(){
+        Alert tieAlert = new Alert(Alert.AlertType.INFORMATION);
+        tieAlert.setHeaderText("Game result:");
+        tieAlert.setContentText("Tie! A new match will start with default settings.");
+        tieAlert.showAndWait();
     }
 
     private void paint(int col){
@@ -145,6 +162,11 @@ public class GameController {
         }
         colorLabel = (Label)labelPane.getChildren().get(2);
         colorLabel.setText("Total Moves: " + (actualGame.redMoves+actualGame.yellowMoves+1));
+    }
+
+    private void changeTimerLabel(String time){
+        Label timeLabel = (Label)labelPane.getChildren().get(3);
+        timeLabel.setText("Last AI Move Time: "+time);
     }
 
     private Color getCircleColor(char color){
