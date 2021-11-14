@@ -18,7 +18,7 @@ public class Board implements Cloneable{
         for (int i = 5; i>=0; i--){
             if(board[i][col]==Constants.EMPTY){
                 board[i][col]=color;
-                System.out.println(Arrays.deepToString(board));
+                //System.out.println(Arrays.deepToString(board));
                 return true;
             }
         }

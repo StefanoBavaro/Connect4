@@ -42,6 +42,7 @@ public class GameController{
         if(!actualGame.inGame){
             if(text.equals("Yellow starts")){
                 actualGame.actualPlayer=Constants.YELLOW;
+                if(actualGame.gamemode!=Constants.PVP) makeAIMove();
             }else if(text.equals("Red starts")){
                 actualGame.actualPlayer=Constants.RED;
             }
@@ -62,6 +63,7 @@ public class GameController{
                 actualGame.gamemode=Constants.PVRandom;
             }else if(text.equals("Minimax Player")){
                 actualGame.gamemode=Constants.PVMinimax;
+                if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove();
             }else if(text.equals("PrunedMinimax Player")){
                 actualGame.gamemode=Constants.PVPrunedMinimax;
             }
@@ -80,17 +82,12 @@ public class GameController{
             char player = actualGame.actualPlayer; //need to save this because if a win happens, the status of the game is cancelled and i would not be able to print the right winner.
             paint(column);
             boolean tie = actualGame.makeMove(column);
+
             if (actualGame.gamemode != Constants.PVP) {
-                Timer t = new Timer();
-                t.start();
-                int nextMove = actualGame.parseNextMove();
-                player = actualGame.actualPlayer;
-                paint(nextMove);
-                actualGame.makeMove(nextMove);
-                t.stop();
-                String timeNeeded = t.elapsed();
-                changeTimerLabel(timeNeeded);
+                player = Constants.YELLOW;
+                makeAIMove();
             }
+
             if (actualGame.inGame == false) {
                 if (tie) {
                     printTie();
@@ -100,6 +97,16 @@ public class GameController{
                 repaint();
             }
         }
+    }
+
+    private void makeAIMove(){
+        Timer t = new Timer();
+        t.start();
+        int nextMove = actualGame.parseNextMove();
+        paint(nextMove);
+        actualGame.makeMove(nextMove);
+        t.stop();
+        changeTimerLabel(t.elapsed());
     }
 
     private void repaint(){

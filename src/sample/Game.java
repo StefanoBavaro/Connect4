@@ -258,23 +258,6 @@ public class Game {
         return res;
     }
 
-
-        /*
-            //int value=0;
-            char opponent = Constants.YELLOW;
-            if (actualPlayer == Constants.YELLOW) opponent = Constants.RED;
-
-            int playingFours = board.checkForStreak(col, 4, opponent);
-            int playingThrees = board.checkForStreak(col, 3, opponent);
-            int playingTwos = board.checkForStreak(col, 2, opponent);
-            int opponentFours = board.checkForStreak(col, 4, actualPlayer);
-            int opponentThrees = board.checkForStreak(col, 3, actualPlayer);
-            int opponentTwos = board.checkForStreak(col, 2, actualPlayer);
-
-            int res = (playingFours * 10 + playingThrees * 5 + playingTwos * 2) - (opponentFours * 10 + opponentThrees * +opponentTwos * 2);
-
-            return res;
-
        /* if(res!=0) return res;
         else {
             try{
@@ -289,21 +272,7 @@ public class Game {
             }catch(ArrayIndexOutOfBoundsException e){
                 return 0;
             }
-
         }
-/*
-        if self.current_move == 1:
-            o_color = 2
-        elif self.current_move == 2:
-            o_color = 1
-        my_fours = self.checkForStreak(state, self.current_move, 4)
-        my_threes = self.checkForStreak(state, self.current_move, 3)
-        my_twos = self.checkForStreak(state, self.current_move, 2)
-        comp_fours = self.checkForStreak(state, o_color, 4)
-        comp_threes = self.checkForStreak(state, o_color, 3)
-        comp_twos = self.checkForStreak(state, o_color, 2)
-        return (my_fours * 10 + my_threes * 5 + my_twos * 2) - (comp_fours * 10 + comp_threes * 5 + comp_twos * 2)
-
     */
 
 
