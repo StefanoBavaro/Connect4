@@ -37,6 +37,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -63,10 +64,14 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Players">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Human Player" />
-                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Random Player" />
-                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Minimax Player" />
-                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="PrunedMinimax Player" />
+            <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Human VS Human" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Human VS Random Player" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Human VS Minimax Player" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Human VS PrunedMinimax Player" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Random Player VS Minimax Player" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Random Player VS PrunedMinimax Player" />
+                  <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Minimax Player VS PrunedMinimaxPlayer" />
           </items>
         </Menu>
       </menus>

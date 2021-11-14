@@ -42,7 +42,7 @@ public class GameController{
         if(!actualGame.inGame){
             if(text.equals("Yellow starts")){
                 actualGame.actualPlayer=Constants.YELLOW;
-                if(actualGame.gamemode!=Constants.PVP) makeAIMove();
+                if(actualGame.gamemode!=Constants.PVP) makeAIMove(Constants.HumanPlayer);
             }else if(text.equals("Red starts")){
                 actualGame.actualPlayer=Constants.RED;
             }
@@ -57,21 +57,51 @@ public class GameController{
     public void setGamemode(ActionEvent e){
         String text = ((MenuItem)e.getSource()).getText();
         if(!actualGame.inGame){
-            if(text.equals("Human Player")){
+            if(text.equals("Human VS Human")){
                 actualGame.gamemode=Constants.PVP;
-            }else if(text.equals("Random Player")){
+            }else if(text.equals("Human VS Random Player")){
                 actualGame.gamemode=Constants.PVRandom;
-            }else if(text.equals("Minimax Player")){
+            }else if(text.equals("Human VS Minimax Player")){
                 actualGame.gamemode=Constants.PVMinimax;
-                if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove();
-            }else if(text.equals("PrunedMinimax Player")){
+                if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove(Constants.HumanPlayer);
+            }else if(text.equals("Human VS PrunedMinimax Player")){
                 actualGame.gamemode=Constants.PVPrunedMinimax;
+                if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove(Constants.HumanPlayer);
+            }else if(text.equals("Random Player VS Minimax Player")){
+                System.out.print("entro");
+                actualGame.gamemode=Constants.RandomVMinimax;
+                startRandomVSMinimaxGame();
+            }else if(text.equals("Random Player VS PrunedMinimax Player")){
+                actualGame.gamemode=Constants.RandomVPrunedMinimax;
+            }else if(text.equals("Minimax Player VS PrunedMinimaxPlayer")){
+                actualGame.gamemode=Constants.MinimaxVPrunedMinimax;
             }
         }else{
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Error");
             errorAlert.setContentText("You cannot change the gamemode during a match; click 'New' to start a new match and select your options.");
             errorAlert.showAndWait();
+        }
+    }
+
+    private void startRandomVSMinimaxGame(){
+        actualGame.inGame=true;
+        char player=actualGame.actualPlayer;
+        boolean tie=false;
+        while(actualGame.inGame||tie){
+            player=actualGame.actualPlayer;
+            tie = makeAIMove(Constants.RandomPlayer);
+            if(tie || actualGame.inGame==false) break;
+            player=actualGame.actualPlayer;
+            tie = makeAIMove(Constants.MinimaxPlayer);
+        }
+        if (actualGame.inGame == false) {
+            if (tie) {
+                printTie();
+            } else {
+                printWin(player);
+            }
+            repaint();
         }
     }
 
@@ -85,7 +115,7 @@ public class GameController{
 
             if (actualGame.gamemode != Constants.PVP) {
                 player = Constants.YELLOW;
-                makeAIMove();
+                tie = makeAIMove(Constants.HumanPlayer);
             }
 
             if (actualGame.inGame == false) {
@@ -99,14 +129,16 @@ public class GameController{
         }
     }
 
-    private void makeAIMove(){
+    private boolean makeAIMove(int player){
         Timer t = new Timer();
         t.start();
-        int nextMove = actualGame.parseAIMove();
+        int nextMove = actualGame.parseAIMove(player);
         paint(nextMove);
-        actualGame.makeMove(nextMove);
+
+        boolean tie = actualGame.makeMove(nextMove);
         t.stop();
         changeTimerLabel(t.elapsed());
+        return tie;
     }
 
     private void repaint(){

@@ -12,6 +12,14 @@ public class Constants {
         public static final int PVRandom = 1;
         public static final int PVMinimax = 2;
         public static final int PVPrunedMinimax = 3;
+        public static final int RandomVMinimax = 4;
+        public static final int RandomVPrunedMinimax = 5;
+        public static final int MinimaxVPrunedMinimax = 6;
+
+        public static final int HumanPlayer=0;
+        public static final int RandomPlayer = 1;
+        public static final int MinimaxPlayer = 2;
+        public static final int PrunedMinimaxPlayer = 3;
 
         public static final int ERROR = -1;
         public static final char WIN = 'w';

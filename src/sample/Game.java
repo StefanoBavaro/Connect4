@@ -35,13 +35,14 @@ public class Game {
         return actualGame;
     }
 
-    public int parseAIMove(){
+    public int parseAIMove(int player){
         int move = Constants.ERROR;
-        if(gamemode==Constants.PVRandom){
+        if(gamemode==Constants.PVRandom || player==Constants.RandomPlayer){
             move = randomMove();
-        }else if(gamemode == Constants.PVMinimax){
+            System.out.println("entro");
+        }else if(gamemode == Constants.PVMinimax||player==Constants.MinimaxPlayer){
             move = minimaxMove();
-        }else if(gamemode == Constants.PVPrunedMinimax){
+        }else if(gamemode == Constants.PVPrunedMinimax||player==Constants.PrunedMinimaxPlayer){
             move = prunedMinimaxMove();
         }
         return move;
