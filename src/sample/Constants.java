@@ -17,4 +17,8 @@ public class Constants {
         public static final char WIN = 'w';
 
         public static final int TIME_CONSTANT = 1000000000;
+
+        public static final int NEG_INFINITY = -100000000;
+        public static final int POS_INFINITY = 100000000;
+
 }

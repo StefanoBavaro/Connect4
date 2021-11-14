@@ -35,12 +35,14 @@ public class Game {
         return actualGame;
     }
 
-    public int parseNextMove(){
+    public int parseAIMove(){
         int move = Constants.ERROR;
         if(gamemode==Constants.PVRandom){
             move = randomMove();
         }else if(gamemode == Constants.PVMinimax){
             move = minimaxMove();
+        }else if(gamemode == Constants.PVPrunedMinimax){
+            move = prunedMinimaxMove();
         }
         return move;
     }
@@ -90,29 +92,6 @@ public class Game {
         }
         return value;
     }
-    /*
-    private int maximize (int col, int depth){
-
-        makeMove(col);
-        if(board.check4()) return 99999;
-        if(depth==0){
-            return evalFunction(col);
-        }
-
-        int value = -9999;
-        for (int childCol = 0; childCol < 7; childCol++){
-            // if(board.checkLegalMove(col)) {
-            Game gameCopyChild = new Game(this);
-            System.out.println("arrivo nel maximize" + childCol);
-            value = Math.max(value, gameCopyChild.minimize(childCol, depth-1));
-            System.out.println("finisco maximize" + childCol);
-            //}else {
-            //   value = -100;
-            //}
-        }
-        return value;
-    }*/
-
 
     private int minimize (int col, int depth){
 
@@ -153,6 +132,84 @@ public class Game {
             α := max(α, minimax(figlio, profondità-1))
     return α
      */
+
+    private int prunedMinimaxMove(){
+        int [] valueArray = new int[7];
+
+        for (int col = 0; col < 7; col++) {
+            valueArray[col]=-100000000;
+            if(board.checkLegalMove(col)) {
+                //System.out.println("Ho inserito nella colonna"+col);
+                Game gameCopy = new Game(this);
+                //gameCopy.makeFakeMove(col);
+                valueArray[col] = gameCopy.prunedMaximize(col,5, Constants.NEG_INFINITY, Constants.POS_INFINITY);
+            }
+        }
+        System.out.println(Arrays.toString(valueArray));
+
+        return findMaxIndex(valueArray);
+    }
+
+    private int prunedMaximize (int col, int depth, int alpha, int beta){
+        makeFakeMove(col);
+        //terminal state
+        if(board.check4()){
+            if(actualPlayer == Constants.RED) return 10000000; //AI (YELLOW) just made the move
+            if(actualPlayer == Constants.YELLOW) return -10000000; //player (RED) made the move
+        }
+        if(board.isFull()) return 0;
+        if(depth==0){
+            actualPlayer=Constants.RED;
+            return evalFunction();
+        }
+
+        int value = Constants.NEG_INFINITY; //uno zero in piu di sopra
+        for (int c= 0; c<7; c++){
+            if(board.checkLegalMove(c)) {
+                //System.out.println("Ho inserito nella colonna"+c);
+                Game gameCopy = new Game(this);
+                value = Math.max(value, gameCopy.prunedMinimize(c,depth-1, alpha, beta));
+                alpha = Math.max(alpha, value);
+                if(alpha>=beta){
+                    break;
+                }
+                //System.out.println("Risultato del maximize per questa colonna: " +value);
+            }
+        }
+        return value;
+    }
+
+    private int prunedMinimize (int col, int depth, int alpha, int beta){
+
+        makeFakeMove(col);
+        //terminal state
+        if(board.check4()){
+            if(actualPlayer == Constants.RED) return 10000000; //AI (YELLOW) just made the move
+            if(actualPlayer == Constants.YELLOW) return -10000000; //player (RED) made the move
+        }
+        if(board.isFull()) return 0;
+
+        if(depth==0){
+            actualPlayer=Constants.RED;
+            return evalFunction();
+        }
+
+        int value = Constants.POS_INFINITY; //uno zero in piu di sopra
+        for (int c= 0; c<7; c++){
+            if(board.checkLegalMove(c)) {
+                Game gameCopy = new Game(this);
+                value = Math.min(value, gameCopy.prunedMaximize(c,depth-1, alpha, beta));
+                beta = Math.min(beta, value);
+                if(alpha>=beta){
+                    break;
+                }
+                //System.out.println("Risultato del minimize per questa colonna: " +value);
+            }
+        }
+        return value;
+    }
+
+
 
     public char getOtherPlayer(){
         if(actualPlayer == Constants.YELLOW) return Constants.RED;
@@ -229,8 +286,6 @@ public class Game {
                // System.out.println("Risultato attuale: "+res);
             }
         }
-
-
 
         return res;
     }
@@ -334,10 +389,6 @@ public class Game {
             return true;
         }
         return false;
-    }
-
-    private boolean terminalState(){
-        return board.check4() || board.isFull();
     }
 
     public void makeFakeMove(int col){

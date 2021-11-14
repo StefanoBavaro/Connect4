@@ -102,7 +102,7 @@ public class GameController{
     private void makeAIMove(){
         Timer t = new Timer();
         t.start();
-        int nextMove = actualGame.parseNextMove();
+        int nextMove = actualGame.parseAIMove();
         paint(nextMove);
         actualGame.makeMove(nextMove);
         t.stop();
