@@ -74,6 +74,13 @@
                   <MenuItem mnemonicParsing="false" onAction="#setGamemode" text="Minimax Player VS PrunedMinimaxPlayer" />
           </items>
         </Menu>
+            <Menu mnemonicParsing="false" text="100 Games Experiments">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#experiments100Games" text="RandomVSMinimax" />
+                  <MenuItem mnemonicParsing="false" onAction="#experiments100Games" text="RandomVSPrunedMinimax" />
+                  <MenuItem mnemonicParsing="false" onAction="#experiments100Games" text="MinimaxVSPrunedMinimax" />
+               </items>
+            </Menu>
       </menus>
     </MenuBar>
     <AnchorPane fx:id="scenePane" maxHeight="700.0" minHeight="647.0" minWidth="715.0" prefHeight="647.0" prefWidth="715.0" style="-fx-background-color: blue;" VBox.vgrow="ALWAYS">

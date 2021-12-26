@@ -9,6 +9,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class GameController{
     Game actualGame = Game.getActualGame();
 
@@ -40,7 +44,7 @@ public class GameController{
         if(!actualGame.inGame){
             if(text.equals("Yellow starts")){
                 actualGame.actualPlayer=Constants.YELLOW;
-                if(actualGame.gamemode!=Constants.PVP) makeAIMove(Constants.HumanPlayer);
+                if(actualGame.gamemode==Constants.PVRandom||actualGame.gamemode==Constants.PVMinimax||actualGame.gamemode==Constants.PVPrunedMinimax) makeAIMove(Constants.HumanPlayer);
             }else if(text.equals("Red starts")){
                 actualGame.actualPlayer=Constants.RED;
             }
@@ -57,23 +61,31 @@ public class GameController{
         if(!actualGame.inGame){
             if(text.equals("Human VS Human")){
                 actualGame.gamemode=Constants.PVP;
+
             }else if(text.equals("Human VS Random Player")){
                 actualGame.gamemode=Constants.PVRandom;
+                if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove(Constants.HumanPlayer);
             }else if(text.equals("Human VS Minimax Player")){
                 actualGame.gamemode=Constants.PVMinimax;
                 if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove(Constants.HumanPlayer);
             }else if(text.equals("Human VS PrunedMinimax Player")){
                 actualGame.gamemode=Constants.PVPrunedMinimax;
                 if(actualGame.actualPlayer==Constants.YELLOW) makeAIMove(Constants.HumanPlayer);
+
             }else if(text.equals("Random Player VS Minimax Player")){
                 actualGame.gamemode=Constants.RandomVMinimax;
+                showColorAlert();
                 startAIVSAIGame(Constants.RandomPlayer, Constants.MinimaxPlayer);
             }else if(text.equals("Random Player VS PrunedMinimax Player")){
                 actualGame.gamemode=Constants.RandomVPrunedMinimax;
+                showColorAlert();
                 startAIVSAIGame(Constants.RandomPlayer, Constants.PrunedMinimaxPlayer);
             }else if(text.equals("Minimax Player VS PrunedMinimaxPlayer")){
                 actualGame.gamemode=Constants.MinimaxVPrunedMinimax;
-                startAIVSAIGame(Constants.MinimaxPlayer, Constants.PrunedMinimaxPlayer);
+                showColorAlert();
+                actualGame.minimaxAI=Constants.RED;
+                //startAIVSAIGame(Constants.MinimaxPlayer, Constants.PrunedMinimaxPlayer);
+                startMinimaxVSPrunedMinimaxGame();
             }
         }else{
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -83,25 +95,132 @@ public class GameController{
         }
     }
 
-    private void startAIVSAIGame(int firstPlayer, int secondPlayer){
+    private void showColorAlert(){
+        int gamemode = actualGame.gamemode;
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("The game is about to start!");
+        if(gamemode==Constants.RandomVMinimax) alert.setContentText("Remember: in this case, the minimax player will be yellow, the random player will be red. If you want to change the starting order, use the 'Options' section.");
+        else if(gamemode==Constants.RandomVPrunedMinimax) alert.setContentText("Remember: in this case, the prunedMinimax player will be yellow, the random player will be red. If you want to change the starting order, use the 'Options' section.");
+        else if(gamemode==Constants.MinimaxVPrunedMinimax) alert.setContentText("Remember: in this case, the minimax player will be red, the prunedMinimax player will be yellow. If you want to change the starting order, use the 'Options' section.");
+        alert.showAndWait();
+    }
+
+    public void experiments100Games(ActionEvent e){
+        String text = ((MenuItem)e.getSource()).getText();
+        int gamemode=0;
+        char firstPlayer=Constants.RandomPlayer;
+        char secondPlayer=Constants.RandomPlayer;
+        if(text.equals("RandomVSMinimax")){
+            gamemode=Constants.RandomVMinimax;
+            actualGame.gamemode=gamemode;
+            firstPlayer=Constants.RandomPlayer;
+            secondPlayer=Constants.MinimaxPlayer;
+        }else if(text.equals("RandomVSPrunedMinimax")){
+            gamemode=Constants.RandomVPrunedMinimax;
+            actualGame.gamemode=gamemode;
+            firstPlayer=Constants.RandomPlayer;
+            secondPlayer=Constants.PrunedMinimaxPlayer;
+        }else if(text.equals("MinimaxVSPrunedMinimax")){
+            gamemode=Constants.MinimaxVPrunedMinimax;
+            actualGame.minimaxAI=Constants.RED;
+            actualGame.gamemode=gamemode;
+            firstPlayer=Constants.MinimaxPlayer;
+            secondPlayer=Constants.PrunedMinimaxPlayer;
+        }
+
+        File myFile = new File("C:\\Users\\stefa\\Connect4\\report.txt");
+        try {
+            FileWriter myWriter = new FileWriter("report.txt");
+            myWriter.write("RED START:\n");
+
+            //if annoying, comment the win/tie prints in the AI Vs AI methods
+
+            for (int i = 0; i < 50; i++) {
+                actualGame.gamemode=gamemode;
+                char winner='e';
+                if(gamemode==Constants.MinimaxVPrunedMinimax){
+                    winner = startMinimaxVSPrunedMinimaxGame();
+                }else{
+                    winner = startAIVSAIGame(firstPlayer, secondPlayer);
+                }
+
+                myWriter.write("game " + i + " = " + winner +"\n");
+            }
+            myWriter.write("\nYELLOW START:\n");
+            for (int i = 0; i < 50; i++) {
+                actualGame.gamemode=gamemode;
+                actualGame.actualPlayer=Constants.YELLOW;
+                char winner='e';
+                if(gamemode==Constants.MinimaxVPrunedMinimax){
+                    winner = startMinimaxVSPrunedMinimaxGame();
+                }else{
+                    winner = startAIVSAIGame(firstPlayer, secondPlayer);
+                }
+
+                myWriter.write("game " + i + " = " + winner +"\n");
+            }
+            myWriter.close();
+        }catch(IOException ioException) {
+            ioException.printStackTrace();
+
+        }
+    }
+
+    private char startMinimaxVSPrunedMinimaxGame(){
         actualGame.inGame=true;
         char player=actualGame.actualPlayer;
         boolean tie=false;
-        while(actualGame.inGame||tie){
+        while(actualGame.inGame /*&& !tie*/){
+            player=actualGame.actualPlayer;
+            if(actualGame.actualPlayer== actualGame.minimaxAI) tie = makeAIMove(Constants.MinimaxPlayer);
+            else tie = makeAIMove(Constants.PrunedMinimaxPlayer);
+
+            if(/*tie || */!actualGame.inGame) break;
+            player=actualGame.actualPlayer;
+            if(actualGame.actualPlayer== actualGame.minimaxAI) tie = makeAIMove(Constants.MinimaxPlayer);
+            else tie = makeAIMove(Constants.PrunedMinimaxPlayer);
+
+        }
+        if (actualGame.inGame == false) {
+            char winner = 'e';
+            if (tie) {
+                printTie();
+                winner = 't';
+            } else {
+                printWin(player);
+                winner = player;
+            }
+            repaint();
+            return winner;
+        }
+        return 'e';
+    }
+
+    private char startAIVSAIGame(int firstPlayer, int secondPlayer){
+        actualGame.inGame=true;
+        char player=actualGame.actualPlayer;
+        boolean tie=false;
+        while(actualGame.inGame/*||!tie*/){
             player=actualGame.actualPlayer;
             tie = makeAIMove(firstPlayer);
-            if(tie || actualGame.inGame==false) break;
+
+            if(/*tie || */!actualGame.inGame) break;
             player=actualGame.actualPlayer;
             tie = makeAIMove(secondPlayer);
         }
         if (actualGame.inGame == false) {
+            char winner = 'e';
             if (tie) {
-                printTie();
+               printTie();
+                winner = 't';
             } else {
-                printWin(player);
+               printWin(player);
+                winner = player;
             }
             repaint();
+            return winner;
         }
+        return 'e';
     }
 
     public void addDisk(ActionEvent e){

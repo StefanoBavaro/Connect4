@@ -35,7 +35,6 @@ public class Board implements Cloneable{
     }
 
     public boolean check4(){
-        //boolean win = false;
         for (int row=0; row<6; row++) {
             for (int col=0; col<7-3; col++) {
                 char curr = board[row][col];
@@ -102,78 +101,6 @@ public class Board implements Cloneable{
         return true;
     }
 
-    public int checkForStreak(int col, int numStreak, char color){
-        int count = 0;
-        for (int i=0; i<6; i++){
-            for (int j=0; j<7; j++){
-                if (board[i][j]== color){
-                    count += this.verticalStreak(i,j,numStreak);
-                    count += this.horizontalStreak(i,j,numStreak);
-                    count += this.diagonalStreak(i,j,numStreak);
-                }
-            }
-        }
-
-        return count;
-    }
-
-    private int verticalStreak(int row, int col, int numStreak){
-        int consecutiveCount = 0;
-        for (int i=row; i>=0; i--){
-            if (board[i][col] == board[row][col]) {
-                consecutiveCount += 1;
-            }else {
-                break;
-            }
-        }
-        if (consecutiveCount >= numStreak){
-            return 1;
-        }else {
-            return 0;
-        }
-    }
-
-    private int horizontalStreak(int row, int col, int numStreak){
-        int consecutiveCount = 0;
-        for (int j=col; j<7; j++){
-            if (board[row][j] == board[row][col]) {
-                consecutiveCount += 1;
-            }else {
-                break;
-            }
-        }
-        if (consecutiveCount >= numStreak){
-            return 1;
-        }else {
-            return 0;
-        }
-    }
-
-    private int diagonalStreak(int row, int col, int numStreak){
-        int total =0;
-        int count =0;
-        int j = col;
-        for (int i=row; i>=0; i--){
-            if(j>6) break;
-            else if(board[i][j] == board[row][col]) count=count+1;
-            else break;
-            j= j+1;
-        }
-        if(count>=numStreak) total=total+1;
-
-        count=0;
-        j=col;
-        for (int i=row; i<6; i++){
-            if(j>6) break;
-            else if(board[i][j] == board[row][col]) count=count+1;
-            else break;
-            j= j+1;
-        }
-        if(count>=numStreak) total=total+1;
-
-        return total;
-    }
-
     public char[] getHorizontalWindow(int col, int row){
         char[] res = new char[4];
         for(int i=0; i<4; i++){
@@ -222,20 +149,4 @@ public class Board implements Cloneable{
         return colArray;
     }
 
-    /*
-    public int countHorizontal(int col, int row, char color){
-        ArrayList<Integer> indexes = new ArrayList();
-        int maxSequence = 0;
-
-    }
-
-    public ArrayList<Integer> createValidArray(int col){
-        ArrayList<Integer> indexes = new ArrayList();
-        for(int i = col-3; i<=col+3; i++){
-            if(i>=0 && i<7) {
-                indexes.add(i);
-            }
-        }
-        return indexes;
-    }*/
 }
